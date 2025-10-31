@@ -1,0 +1,8 @@
+{
+  "name": "claude-ai-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.py",
+  "scripts": {},
+  "dependencies": {}
+}

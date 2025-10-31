@@ -1,0 +1,8 @@
+SECRET_BACKEND: aws
+AWS_REGION: us-east-1
+AZURE_KEY_VAULT_URL: https://my-key-vault.vault.azure.net/
+VAULT_ADDR: https://vault.example.com
+IMAGE_REGISTRY: ghcr.io/${GITHUB_REPOSITORY}
+IMAGE_NAME: claude-ai-service
+IMAGE_TAG: ${{ GITHUB_SHA }}
+TRIVY_SEVERITY: HIGH,CRITICAL
