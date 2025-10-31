@@ -5,9 +5,13 @@ def main():
     print("Claude AI Service")
 
     try:
+        SecretsManager.initialize_conjur_sync()
         token = SecretsManager.get_github_token()
         print("GitHub token loaded successfully")
     except ValueError as e:
+        print(f"Error: {e}")
+        return 1
+    except RuntimeError as e:
         print(f"Error: {e}")
         return 1
     finally:

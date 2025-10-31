@@ -1,0 +1,50 @@
+# Conjur generated files and certificates
+conjur-certs/
+admin_data
+data_key
+my_app_data
+nginx-proxy.conf
+
+# Python cache files
+src/__pycache__/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment files
+.env
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+
+# Log files
+*.log
+
+# Docker generated files
+docker-compose.override.yml
+
+# Conjur configuration files with sensitive data
+conjur-config/
+host_policy.yml
+
+# Test files
+test_*.py.bak

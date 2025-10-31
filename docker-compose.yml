@@ -1,0 +1,75 @@
+services:
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+      - ./conjur-certs/conjur.crt:/etc/nginx/conjur.crt:ro
+      - ./conjur-certs/conjur.key:/etc/nginx/conjur.key:ro
+      - ./conjur-certs/dhparam.pem:/etc/nginx/dhparam.pem:ro
+    depends_on:
+      - conjur
+    networks:
+      - default
+
+  conjur:
+    image: cyberark/conjur:latest
+    command: server
+    ports:
+      - "80:80"
+    environment:
+      CONJUR_ACCOUNT: myaccount
+      CONJUR_ADMIN_PASSWORD: ${CONJUR_ADMIN_PASSWORD:-AdminPassword123!}
+      DATABASE_URL: postgres://postgres:postgres@conjur-db:5432/conjur
+      CONJUR_DATA_KEY: ${CONJUR_DATA_KEY}
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: "true"
+      CONJUR_LOG_LEVEL: info
+      CONJUR_SSL_ENABLED: "true"
+    env_file:
+      - .env
+    depends_on:
+      - conjur-db
+    volumes:
+      - conjur-data:/opt/conjur/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  conjur-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: conjur
+    volumes:
+      - conjur-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  client:
+    image: ubuntu:22.04
+    entrypoint: bash
+    command: ["-c", "exec bash"]
+    stdin_open: true
+    tty: true
+    depends_on:
+      - conjur
+    environment:
+      CONJUR_ACCOUNT: myConjurAccount
+      CONJUR_APPLIANCE_URL: https://proxy
+    volumes:
+      - client-home:/root
+      - ./admin_data:/tmp/admin_data:ro
+      - ./conjur-certs/conjur.crt:/etc/ssl/certs/conjur.crt:ro
+
+volumes:
+  conjur-data:
+  conjur-db-data:
+  client-home:
