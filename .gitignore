@@ -48,3 +48,15 @@ host_policy.yml
 
 # Test files
 test_*.py.bak
+
+# Security and DevSecOps artifacts
+slsa-attestation.json
+sbom.json
+image-signature.sig
+cosign.key
+cosign.pub
+bandit-report.json
+safety-report.json
+semgrep-report.json
+trivy-results.sarif
+coverage.xml
