@@ -221,9 +221,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [integration-test]
     if: github.ref == 'refs/heads/main'
-    environment:
-      name: staging
-      url: https://staging.example.com
+    # environment:
+    #   name: staging
+    #   url: https://staging.example.com
 
     steps:
       - name: Checkout code
@@ -239,9 +239,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy-staging]
     if: github.ref == 'refs/heads/main'
-    environment:
-      name: production
-      url: https://production.example.com
+    # environment:
+    #   name: production
+    #   url: https://production.example.com
 
     steps:
       - name: Checkout code
