@@ -14,7 +14,7 @@ class SecretsManager:
     async def initialize_conjur(cls) -> None:
         """Initialize CyberArk Conjur client if configured."""
         secret_backend = os.environ.get("SECRET_BACKEND", "env")  # noqa: S105
-        if secret_backend != "conjur":  # noqa: S105
+        if secret_backend != "conjur":  # noqa: S105 # nosec B105
             return
 
         use_mock = os.environ.get("CONJUR_MOCK", "false").lower() == "true"
@@ -25,7 +25,7 @@ class SecretsManager:
 
                 cls._conjur_client = MockConjurClient()
                 cls._conjur_client.login()
-                cls._secret_backend = "conjur"  # noqa: S105
+                cls._secret_backend = "conjur"  # noqa: S105 # nosec B105
                 return
 
             from conjur_api import Client
@@ -64,7 +64,7 @@ class SecretsManager:
                 ssl_verification_mode=SslVerificationMode.INSECURE,
             )
             await cls._conjur_client.login()
-            cls._secret_backend = "conjur"  # noqa: S105
+            cls._secret_backend = "conjur"  # noqa: S105 # nosec B105
         except ImportError as e:
             raise ImportError(
                 "conjur-api package not installed. Install with: pip install conjur-api"
@@ -82,7 +82,7 @@ class SecretsManager:
         """
         Get secret from configured backend (env, conjur, aws, azure, vault) - async version.
         """
-        if cls._secret_backend == "conjur" and cls._conjur_client:  # noqa: S105
+        if cls._secret_backend == "conjur" and cls._conjur_client:  # noqa: S105 # nosec B105
             try:
                 secret = await cls._conjur_client.get(secret_path)
                 if isinstance(secret, bytes):
@@ -101,7 +101,7 @@ class SecretsManager:
         """
         Get secret from configured backend (env, conjur, aws, azure, vault) - sync wrapper.
         """
-        if cls._secret_backend == "conjur" and cls._conjur_client:  # noqa: S105
+        if cls._secret_backend == "conjur" and cls._conjur_client:  # noqa: S105 # nosec B105
             return asyncio.run(cls.get_secret_async(secret_path))
         else:
             env_var = secret_path.replace("/", "_").upper()
@@ -116,13 +116,13 @@ class SecretsManager:
         if cls._github_token:
             return cls._github_token
 
-        if cls._secret_backend == "conjur" and cls._conjur_client:  # noqa: S105
+        if cls._secret_backend == "conjur" and cls._conjur_client:  # noqa: S105 # nosec B105
             try:
                 token = cls.get_secret("github/token")
                 if token and token.strip():
                     cls._github_token = token
                     return token
-            except Exception:  # noqa: S110
+            except Exception:  # noqa: S110 # nosec B110
                 pass
 
         token = os.environ.get("GITHUB_TOKEN")
@@ -130,7 +130,7 @@ class SecretsManager:
         if not token:
             if os.environ.get("CONJUR_MOCK", "false").lower() == "true":
                 # In mock mode, don't prompt - use mock token
-                token = "mock-github-token-12345"  # noqa: S105
+                token = "mock-github-token-12345"  # noqa: S105 # nosec B105
             else:
                 token = getpass.getpass("Enter your GitHub token: ")
 
