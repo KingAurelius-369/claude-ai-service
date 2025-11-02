@@ -30,11 +30,35 @@ Claude AI Service is a Python-based secrets management application that integrat
 
 ### Local Development
 ```bash
-# Run directly
-python src/main.py
-
 # Install dependencies
 pip install -r requirements.txt
+
+# Run application directly
+python src/main.py
+
+# Run with mock Conjur (no Docker required)
+CONJUR_MOCK=true python src/main.py
+```
+
+### Code Quality & Testing
+```bash
+# Run linting
+ruff check src/
+ruff format src/ --check
+
+# Fix linting issues
+ruff check --fix src/
+ruff format src/
+
+# Run security scans
+bandit -r src/ -f txt
+safety check
+
+# Run tests
+pytest test_conjur_setup.py -v --cov=src --cov-report=xml --cov-report=term-missing
+
+# Test with mock backend
+CONJUR_MOCK=true pytest test_conjur_setup.py -v
 ```
 
 ### Docker Development
@@ -45,9 +69,20 @@ docker build -t claude-ai-service .
 # Run full Conjur stack
 docker-compose up -d
 
+# Check Conjur health
+curl -k https://localhost:443/health
+
 # Run application container
 docker run claude-ai-service
 ```
+
+### CI/CD Pipeline
+The project uses a comprehensive secure CI/CD pipeline (`.github/workflows/secure-ci-cd.yml`) that:
+- Tests on Python 3.10, 3.11, 3.12
+- Runs security scans (Bandit, Safety, Trivy)
+- Performs code quality checks (Ruff linting/formatting)
+- Builds multi-architecture Docker images
+- Includes integration and deployment stages
 
 ### Environment Configuration
 The application supports multiple secret backends via `SECRET_BACKEND` environment variable:
@@ -85,4 +120,19 @@ DevSecOps utility scripts in `scripts/` directory (placeholders for future imple
 - `deploy_multi_cloud.sh` - Multi-cloud deployment
 
 ## Testing Patterns
-Use `CONJUR_MOCK=true` environment variable to enable mock client for testing without Docker infrastructure.
+
+### Mock Testing
+- Use `CONJUR_MOCK=true` environment variable to enable mock client for testing without Docker infrastructure
+- Mock client (`src/mock_conjur.py`) provides realistic test data including GitHub tokens, AWS keys, etc.
+- Test file `test_conjur_setup.py` demonstrates complete mock workflow testing
+
+### CI/CD Testing Strategy
+- **Security-first**: All code must pass Bandit security scan and Safety dependency check
+- **Multi-version**: Tests run on Python 3.10, 3.11, 3.12 to ensure compatibility
+- **Code quality**: Ruff linting and formatting enforced with `# nosec` comments for legitimate security exceptions
+- **Coverage**: Pytest with coverage reporting, mock mode enabled by default in CI
+
+### Python Version Requirements
+- **Minimum**: Python 3.10 (due to `conjur-api>=0.1.7` dependency)
+- **Recommended**: Python 3.11 (matches Docker container)
+- **Ruff target**: py310 (configured in `pyproject.toml`)
