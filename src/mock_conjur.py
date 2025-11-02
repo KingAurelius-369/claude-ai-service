@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-from typing import Dict, Optional
+from typing import Dict
 
 
 class MockConjurClient:
@@ -11,7 +11,9 @@ class MockConjurClient:
             "github/token": os.environ.get("GITHUB_TOKEN", "mock-github-token-12345"),
             "semgrep/app-token": os.environ.get("SEMGREP_APP_TOKEN", "mock-semgrep-token"),
             "aws/access-key": os.environ.get("AWS_ACCESS_KEY_ID", "AKIAIOSFODNN7EXAMPLE"),
-            "aws/secret-key": os.environ.get("AWS_SECRET_ACCESS_KEY", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"),
+            "aws/secret-key": os.environ.get(
+                "AWS_SECRET_ACCESS_KEY", "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+            ),
             "azure/credentials": os.environ.get("AZURE_CREDENTIALS", "mock-azure-creds"),
         }
 
